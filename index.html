@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CampusBF - Trouve ton établissement idéal</title>
+<meta name="description" content="CampusBF aide les étudiants du Burkina Faso à trouver et comparer les établissements d'enseignement supérieur.">
+<meta name="theme-color" content="#1A4FA0">
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+:root{--blue:#1A4FA0;--blue-light:#EEF3FC;--blue-mid:#3B6FCC;--text:#1a1a2e;--muted:#6b7280;--border:#e2e8f0;--white:#fff;--green:#16a34a;--amber:#d97706}
+body{background:#f0f4f8;display:flex;justify-content:center;padding:16px;min-height:100vh}
+.phone{width:375px;height:720px;background:var(--white);border-radius:32px;overflow:hidden;border:2px solid var(--border);position:relative;box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+.screen{position:absolute;inset:0;overflow-y:auto;display:none;flex-direction:column}
+.screen.active{display:flex}
+.topbar{background:var(--blue);padding:16px 20px 12px;color:#fff;flex-shrink:0}
+.topbar h1{font-size:20px;font-weight:700;letter-spacing:-0.3px}
+.topbar p{font-size:12px;opacity:0.8;margin-top:2px}
+.search-box{background:#fff;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-top:12px}
+.search-box input{border:none;outline:none;font-size:14px;flex:1;color:var(--text)}
+.search-box i{color:var(--blue);font-size:18px}
+.filters{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;flex-shrink:0}
+.filters::-webkit-scrollbar{display:none}
+.chip{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;white-space:nowrap;cursor:pointer;color:var(--muted);transition:all .2s}
+.chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.section-title{font-size:13px;font-weight:600;color:var(--muted);padding:0 16px 8px;text-transform:uppercase;letter-spacing:.5px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:16px;margin:0 16px 12px;padding:14px;cursor:pointer;transition:box-shadow .2s}
+.card:hover{box-shadow:0 4px 12px rgba(26,79,160,0.12)}
+.card-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.avatar{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.av-blue{background:#EEF3FC;color:var(--blue)}
+.av-green{background:#F0FDF4;color:var(--green)}
+.av-amber{background:#FFFBEB;color:var(--amber)}
+.card-name{font-size:15px;font-weight:600;color:var(--text);line-height:1.3}
+.card-type{font-size:12px;color:var(--muted);margin-top:2px}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.badge-blue{background:#EEF3FC;color:var(--blue)}
+.badge-green{background:#F0FDF4;color:var(--green)}
+.badge-amber{background:#FFFBEB;color:var(--amber)}
+.badge-premium{background:var(--blue);color:#fff}
+.stats-row{display:flex;gap:16px;border-top:1px solid var(--border);padding-top:10px}
+.stat{display:flex;flex-direction:column;align-items:center;flex:1}
+.stat-val{font-size:15px;font-weight:700;color:var(--text)}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:2px}
+.star{color:#f59e0b;font-size:12px}
+.bottom-nav{background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 12px;flex-shrink:0;margin-top:auto}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--muted);font-size:10px;border:none;background:none;transition:color .2s}
+.nav-btn.active{color:var(--blue)}
+.nav-btn i{font-size:22px}
+.back-btn{display:flex;align-items:center;gap:6px;color:#fff;opacity:.9;font-size:13px;cursor:pointer;padding:4px 0}
+.back-btn i{font-size:18px}
+.hero-banner{background:linear-gradient(135deg,var(--blue) 0%,var(--blue-mid) 100%);padding:20px;color:#fff;flex-shrink:0}
+.hero-banner h2{font-size:18px;font-weight:700}
+.hero-banner p{font-size:12px;opacity:.8;margin-top:4px}
+.info-section{padding:16px;border-bottom:1px solid var(--border)}
+.info-section h3{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.info-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.info-row i{color:var(--blue);font-size:16px;flex-shrink:0;margin-top:1px}
+.info-row span{font-size:13px;color:var(--text);line-height:1.5}
+.prog-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.prog-item:last-child{border-bottom:none}
+.prog-name{font-size:13px;font-weight:500;color:var(--text)}
+.prog-dur{font-size:12px;color:var(--muted)}
+.rating-big{font-size:36px;font-weight:800;color:var(--text)}
+.stars-big{font-size:20px;color:#f59e0b;letter-spacing:2px}
+.cta-btn{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;margin:16px;width:calc(100% - 32px);transition:opacity .2s}
+.cta-btn:hover{opacity:.9}
+.comp-header{background:var(--blue);padding:14px 16px;color:#fff;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.comp-header h2{font-size:16px;font-weight:700}
+.comp-grid{display:grid;grid-template-columns:110px 1fr 1fr;gap:0;flex:1;overflow-y:auto}
+.comp-col-head{padding:10px 8px;text-align:center;border-bottom:2px solid var(--border);background:#fff}
+.comp-col-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.3}
+.comp-col-type{font-size:10px;color:var(--muted)}
+.comp-row-label{padding:10px 8px;background:#f8fafc;font-size:11px;font-weight:600;color:var(--muted);display:flex;align-items:center;border-bottom:1px solid var(--border)}
+.comp-cell{padding:10px 8px;text-align:center;font-size:12px;color:var(--text);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+.comp-cell i{font-size:16px}
+.check{color:var(--green)}
+.cross{color:#ef4444}
+.tag{font-size:10px;background:var(--blue-light);color:var(--blue);padding:2px 7px;border-radius:10px;font-weight:500}
+.ai-header{background:var(--blue);padding:16px 20px 12px;color:#fff;flex-shrink:0}
+.ai-header h2{font-size:18px;font-weight:700}
+.ai-header p{font-size:12px;opacity:.8;margin-top:2px}
+.ai-chat{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:#f0f4f8}
+.ai-msg{display:flex;gap:8px;align-items:flex-end}
+.ai-msg.user{flex-direction:row-reverse}
+.ai-bubble{padding:10px 13px;border-radius:16px;font-size:13px;line-height:1.5;max-width:82%}
+.ai-msg.bot .ai-bubble{background:#fff;color:#1a1a2e;border-radius:4px 16px 16px 16px;border:1px solid var(--border)}
+.ai-msg.user .ai-bubble{background:var(--blue);color:#fff;border-radius:16px 4px 16px 16px}
+.ai-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.bot .ai-av{background:#EEF3FC;color:var(--blue)}
+.user .ai-av{background:#1A4FA0;color:#9FE1CB}
+.ai-chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:#fff;border-top:1px solid var(--border);flex-shrink:0}
+.ai-chip{background:var(--blue-light);border:none;border-radius:16px;padding:5px 12px;font-size:11px;color:var(--blue);cursor:pointer;font-weight:500}
+.ai-input-row{display:flex;gap:8px;padding:10px 12px;background:#fff;border-top:1px solid var(--border);flex-shrink:0}
+.ai-input-row input{flex:1;border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px;outline:none;color:var(--text)}
+.ai-input-row input:focus{border-color:var(--blue)}
+.ai-send{width:36px;height:36px;background:var(--blue);border:none;border-radius:10px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ai-send:disabled{opacity:.4}
+.ai-dot{width:5px;height:5px;background:var(--blue);border-radius:50%;animation:ai-bounce 1s infinite;display:inline-block;margin:0 2px}
+.ai-dot:nth-child(2){animation-delay:.15s}
+.ai-dot:nth-child(3){animation-delay:.3s}
+@keyframes ai-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.demo-note{position:fixed;bottom:8px;left:0;right:0;text-align:center;font-size:10px;color:#94a3b8}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+</head>
+<body>
+
+<div style="display:flex;justify-content:center;padding:8px 0">
+<div class="phone">
+
+<!-- SCREEN 1: Accueil -->
+<div class="screen active" id="s-home">
+  <div class="topbar">
+    <h1>🎓 CampusBF</h1>
+    <p>Trouve ton établissement idéal</p>
+    <div class="search-box">
+      <i class="ti ti-search"></i>
+      <input type="text" placeholder="Chercher un établissement ou filière..." />
+    </div>
+  </div>
+  <div class="filters">
+    <div class="chip active">Tous</div>
+    <div class="chip">Public</div>
+    <div class="chip">Privé</div>
+    <div class="chip">Ouagadougou</div>
+    <div class="chip">Bobo-Dioulasso</div>
+    <div class="chip">Ingénierie</div>
+    <div class="chip">Santé</div>
+    <div class="chip">Droit</div>
+  </div>
+
+  <div style="flex:1;overflow-y:auto;padding:4px 0 8px">
+    <div class="section-title">Établissements en vedette</div>
+
+    <div class="card" onclick="showScreen('s-detail')">
+      <div class="card-head">
+        <div class="avatar av-blue">UO</div>
+        <div>
+          <div class="card-name">Université Joseph Ki-Zerbo</div>
+          <div class="card-type">Université publique · Ouagadougou</div>
+        </div>
+        <span class="badge badge-premium" style="margin-left:auto;flex-shrink:0">⭐ Premium</span>
+      </div>
+      <div class="badge-row">
+        <span class="badge badge-blue">Droit</span>
+        <span class="badge badge-blue">Sciences</span>
+        <span class="badge badge-blue">Lettres</span>
+        <span class="badge badge-blue">Économie</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><span class="stat-val">45 000+</span><span class="stat-lbl">Étudiants</span></div>
+        <div class="stat"><span class="stat-val star">★ 4.2</span><span class="stat-lbl">Note</span></div>
+        <div class="stat"><span class="stat-val">Gratuit</span><span class="stat-lbl">Frais</span></div>
+      </div>
+    </div>
+
+    <div class="card" onclick="showScreen('s-detail')">
+      <div class="card-head">
+        <div class="avatar av-green">2iE</div>
+        <div>
+          <div class="card-name">Institut 2iE</div>
+          <div class="card-type">Institut privé · Ouagadougou</div>
+        </div>
+      </div>
+      <div class="badge-row">
+        <span class="badge badge-green">Ingénierie</span>
+        <span class="badge badge-green">Eau & Énergie</span>
+        <span class="badge badge-green">TIC</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><span class="stat-val">3 200</span><span class="stat-lbl">Étudiants</span></div>
+        <div class="stat"><span class="stat-val star">★ 4.6</span><span class="stat-lbl">Note</span></div>
+        <div class="stat"><span class="stat-val">Payant</span><span class="stat-lbl">Frais</span></div>
+      </div>
+    </div>
+
+    <div class="card" onclick="showScreen('s-detail')">
+      <div class="card-head">
+        <div class="avatar av-amber">UP</div>
+        <div>
+          <div class="card-name">Université Polytechnique</div>
+          <div class="card-type">Université publique · Bobo-Dioulasso</div>
+        </div>
+      </div>
+      <div class="badge-row">
+        <span class="badge badge-amber">Sciences</span>
+        <span class="badge badge-amber">Technologie</span>
+        <span class="badge badge-amber">Gestion</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><span class="stat-val">12 000</span><span class="stat-lbl">Étudiants</span></div>
+        <div class="stat"><span class="stat-val star">★ 4.0</span><span class="stat-lbl">Note</span></div>
+        <div class="stat"><span class="stat-val">Gratuit</span><span class="stat-lbl">Frais</span></div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:center;padding:8px 0">
+      <button onclick="showScreen('s-compare')" style="background:none;border:1.5px solid var(--blue);color:var(--blue);border-radius:12px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer">
+        <i class="ti ti-arrows-diff" style="vertical-align:-2px;margin-right:6px"></i>Comparer des établissements
+      </button>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showScreen('s-home')"><i class="ti ti-home"></i>Accueil</button>
+    <button class="nav-btn" onclick="showScreen('s-compare')"><i class="ti ti-arrows-diff"></i>Comparer</button>
+    <button class="nav-btn" onclick="showScreen('s-ai')"><i class="ti ti-robot"></i>Assistant</button>
+    <button class="nav-btn"><i class="ti ti-user"></i>Profil</button>
+  </div>
+</div>
+
+<!-- SCREEN 2: Fiche établissement -->
+<div class="screen" id="s-detail">
+  <div class="hero-banner">
+    <div class="back-btn" onclick="showScreen('s-home')">
+      <i class="ti ti-arrow-left"></i> Retour
+    </div>
+    <h2 style="margin-top:10px">Université Joseph Ki-Zerbo</h2>
+    <p>Université publique · Fondée en 1974 · Ouagadougou</p>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <span class="badge" style="background:rgba(255,255,255,0.2);color:#fff">★ 4.2 / 5</span>
+      <span class="badge" style="background:rgba(255,255,255,0.2);color:#fff">45 000+ étudiants</span>
+    </div>
+  </div>
+
+  <div style="flex:1;overflow-y:auto">
+    <div class="info-section">
+      <h3>Informations générales</h3>
+      <div class="info-row"><i class="ti ti-map-pin"></i><span>03 BP 7021, Ouagadougou 03, Burkina Faso</span></div>
+      <div class="info-row"><i class="ti ti-phone"></i><span>+226 25 30 70 64</span></div>
+      <div class="info-row"><i class="ti ti-world"></i><span>www.ujkz.bf</span></div>
+      <div class="info-row"><i class="ti ti-calendar"></i><span>Rentrée : Octobre 2025 · Inscription : Juillet–Septembre</span></div>
+    </div>
+
+    <div class="info-section">
+      <h3>Filières disponibles</h3>
+      <div class="prog-item">
+        <div><div class="prog-name">Droit & Sciences Politiques</div><div class="prog-dur">Licence · Master · Doctorat</div></div>
+        <span class="tag">3–8 ans</span>
+      </div>
+      <div class="prog-item">
+        <div><div class="prog-name">Sciences Économiques & Gestion</div><div class="prog-dur">Licence · Master</div></div>
+        <span class="tag">3–5 ans</span>
+      </div>
+      <div class="prog-item">
+        <div><div class="prog-name">Lettres, Arts & Communication</div><div class="prog-dur">Licence · Master</div></div>
+        <span class="tag">3–5 ans</span>
+      </div>
+      <div class="prog-item">
+        <div><div class="prog-name">Sciences & Technologies</div><div class="prog-dur">Licence · Master · Doctorat</div></div>
+        <span class="tag">3–8 ans</span>
+      </div>
+      <div class="prog-item">
+        <div><div class="prog-name">Sciences de la Santé</div><div class="prog-dur">Médecine · Pharmacie</div></div>
+        <span class="tag">6–7 ans</span>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h3>Note des étudiants</h3>
+      <div style="display:flex;align-items:center;gap:20px;padding:8px 0">
+        <div style="text-align:center">
+          <div class="rating-big">4.2</div>
+          <div class="stars-big">★★★★☆</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">287 avis</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Qualité d'enseignement</div>
+          <div style="background:#e2e8f0;border-radius:4px;height:6px;margin-bottom:8px"><div style="background:var(--blue);width:80%;height:6px;border-radius:4px"></div></div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Infrastructures</div>
+          <div style="background:#e2e8f0;border-radius:4px;height:6px;margin-bottom:8px"><div style="background:var(--blue);width:60%;height:6px;border-radius:4px"></div></div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Insertion pro.</div>
+          <div style="background:#e2e8f0;border-radius:4px;height:6px"><div style="background:var(--blue);width:72%;height:6px;border-radius:4px"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="cta-btn" onclick="showScreen('s-compare')">
+      <i class="ti ti-arrows-diff" style="vertical-align:-2px;margin-right:8px"></i>Comparer avec un autre établissement
+    </button>
+    <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- SCREEN 3: Comparateur -->
+<div class="screen" id="s-compare">
+  <div class="comp-header">
+    <i class="ti ti-arrows-diff" style="font-size:20px"></i>
+    <h2>Comparateur</h2>
+    <button onclick="showScreen('s-home')" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer">Accueil</button>
+  </div>
+
+  <div style="flex:1;overflow:auto">
+    <div class="comp-grid">
+      <div class="comp-col-head" style="background:#f8fafc"></div>
+      <div class="comp-col-head">
+        <div class="comp-col-name">Univ. Ki-Zerbo</div>
+        <div class="comp-col-type">Publique</div>
+      </div>
+      <div class="comp-col-head">
+        <div class="comp-col-name">Institut 2iE</div>
+        <div class="comp-col-type">Privé</div>
+      </div>
+
+      <div class="comp-row-label">Type</div>
+      <div class="comp-cell"><span class="tag">Public</span></div>
+      <div class="comp-cell"><span class="tag">Privé</span></div>
+
+      <div class="comp-row-label">Ville</div>
+      <div class="comp-cell" style="font-size:11px">Ouagadougou</div>
+      <div class="comp-cell" style="font-size:11px">Ouagadougou</div>
+
+      <div class="comp-row-label">Étudiants</div>
+      <div class="comp-cell"><strong>45 000</strong></div>
+      <div class="comp-cell"><strong>3 200</strong></div>
+
+      <div class="comp-row-label">Frais</div>
+      <div class="comp-cell"><span class="badge badge-green">Gratuit</span></div>
+      <div class="comp-cell"><span class="badge badge-amber">Payant</span></div>
+
+      <div class="comp-row-label">Note</div>
+      <div class="comp-cell"><span style="color:#f59e0b;font-weight:700">★ 4.2</span></div>
+      <div class="comp-cell"><span style="color:#f59e0b;font-weight:700">★ 4.6</span></div>
+
+      <div class="comp-row-label">Ingénierie</div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+
+      <div class="comp-row-label">Médecine</div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+      <div class="comp-cell"><i class="ti ti-circle-x cross"></i></div>
+
+      <div class="comp-row-label">Droit</div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+      <div class="comp-cell"><i class="ti ti-circle-x cross"></i></div>
+
+      <div class="comp-row-label">Résidence</div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+
+      <div class="comp-row-label">Biblioth.</div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+
+      <div class="comp-row-label">Bourse dispo.</div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+
+      <div class="comp-row-label">Formation pro.</div>
+      <div class="comp-cell"><i class="ti ti-circle-x cross"></i></div>
+      <div class="comp-cell"><i class="ti ti-circle-check check"></i></div>
+    </div>
+
+    <div style="padding:16px">
+      <button class="cta-btn" style="margin:0;width:100%" onclick="showScreen('s-home')">
+        <i class="ti ti-home" style="vertical-align:-2px;margin-right:8px"></i>Voir tous les établissements
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: Assistant IA (version démo, réponses simulées) -->
+<div class="screen" id="s-ai" style="flex-direction:column">
+  <div class="ai-header">
+    <h2><i class="ti ti-robot" style="vertical-align:-2px;margin-right:6px"></i>Assistant CampusBF</h2>
+    <p>Pose ta question sur les établissements au Burkina</p>
+  </div>
+  <div class="ai-chat" id="ai-chat">
+    <div class="ai-msg bot">
+      <div class="ai-av">IA</div>
+      <div class="ai-bubble">Bonjour ! Je suis l'assistant CampusBF 🎓<br><br>Dis-moi ton niveau, ta filière souhaitée et ta ville — je t'aide à trouver l'établissement idéal au Burkina Faso.</div>
+    </div>
+  </div>
+  <div class="ai-chips" id="ai-chips">
+    <button class="ai-chip" onclick="aiChip(this)">J'ai le BAC, je veux faire informatique</button>
+    <button class="ai-chip" onclick="aiChip(this)">Universités publiques gratuites ?</button>
+    <button class="ai-chip" onclick="aiChip(this)">Comparer 2iE et Ki-Zerbo</button>
+    <button class="ai-chip" onclick="aiChip(this)">Bourses disponibles ?</button>
+  </div>
+  <div class="ai-input-row">
+    <input type="text" id="ai-input" placeholder="Ta question..." onkeydown="if(event.key==='Enter')aiSend()" />
+    <button class="ai-send" id="ai-send-btn" onclick="aiSend()"><i class="ti ti-arrow-up"></i></button>
+  </div>
+</div>
+
+</div>
+</div>
+<div class="demo-note">Version démo — réponses pré-écrites, pas de connexion IA en direct</div>
+
+<script>
+// Base de connaissances simplifiée (version démo, pas d'appel API)
+const INSTITUTIONS = [
+  { nom: "Université Joseph Ki-Zerbo", type: "publique", ville: "Ouagadougou", filieres: ["droit","sciences","lettres","économie","santé","médecine"], frais: "gratuit", note: 4.2 },
+  { nom: "Université Nazi Boni", type: "publique", ville: "Bobo-Dioulasso", filieres: ["sciences","lettres","droit"], frais: "gratuit", note: 4.0 },
+  { nom: "Université Norbert Zongo", type: "publique", ville: "Koudougou", filieres: ["sciences humaines","éducation"], frais: "gratuit", note: 3.9 },
+  { nom: "Université Polytechnique de Bobo", type: "publique", ville: "Bobo-Dioulasso", filieres: ["sciences","technologie","gestion"], frais: "gratuit", note: 4.0 },
+  { nom: "Institut 2iE", type: "privé", ville: "Ouagadougou", filieres: ["génie civil","eau","environnement","énergie","informatique","tic"], frais: "payant, bourses disponibles", note: 4.6 },
+  { nom: "ISIG", type: "privé", ville: "Ouagadougou", filieres: ["informatique","gestion"], frais: "payant", note: 4.1 },
+  { nom: "Université Aube Nouvelle", type: "privé", ville: "Ouagadougou", filieres: ["droit","économie","gestion"], frais: "payant", note: 3.9 },
+  { nom: "INSSA", type: "privé", ville: "Ouagadougou", filieres: ["santé"], frais: "payant", note: 4.0 }
+];
+
+// Règles simples de réponse (mots-clés → réponse). Aucune connexion réseau nécessaire.
+function generateDemoReply(question) {
+  const q = question.toLowerCase();
+
+  if (q.includes("2ie") || q.includes("2ie") || (q.includes("compar") && q.includes("ki-zerbo"))) {
+    return "L'Institut 2iE (privé, note 4.6/5) est spécialisé en ingénierie, eau et énergie, avec des bourses disponibles mais des frais payants. L'Université Ki-Zerbo (publique, note 4.2/5) est gratuite et couvre droit, sciences, lettres et santé, mais sans spécialisation ingénierie aussi poussée. Utilise l'onglet Comparateur pour voir le détail côte à côte !";
+  }
+  if (q.includes("bourse")) {
+    return "Plusieurs établissements proposent des bourses, notamment l'Institut 2iE pour les filières ingénierie. Les universités publiques (Ki-Zerbo, Nazi Boni, Norbert Zongo, Polytechnique de Bobo) sont gratuites pour les étudiants boursiers de l'État burkinabè. Je te conseille de vérifier les conditions directement avec chaque établissement pour les critères d'éligibilité 2026.";
+  }
+  if (q.includes("gratuit") || q.includes("public")) {
+    const pub = INSTITUTIONS.filter(i => i.type === "publique").map(i => i.nom).join(", ");
+    return `Les universités publiques et gratuites au Burkina sont : ${pub}. Elles couvrent la majorité des filières classiques (droit, sciences, lettres, santé, gestion).`;
+  }
+  if (q.includes("informatique") || q.includes("tic") || q.includes("numérique")) {
+    const infos = INSTITUTIONS.filter(i => i.filieres.some(f => f.includes("informatique") || f.includes("tic")));
+    const noms = infos.map(i => `${i.nom} (${i.ville}, ${i.frais})`).join(" · ");
+    return `Pour l'informatique, regarde du côté de : ${noms}. L'Institut 2iE et ISIG sont particulièrement reconnus dans ce domaine à Ouagadougou.`;
+  }
+  if (q.includes("droit")) {
+    return "Pour le droit, l'Université Joseph Ki-Zerbo (publique, gratuite) et l'Université Aube Nouvelle (privée) proposent cette filière. Ki-Zerbo a l'avantage d'être gratuite et bien établie depuis 1974.";
+  }
+  if (q.includes("santé") || q.includes("médecine")) {
+    return "Pour la santé et la médecine, l'Université Joseph Ki-Zerbo (publique, gratuite) et l'INSSA (privé) sont les références à Ouagadougou.";
+  }
+  if (q.includes("bac")) {
+    return "Avec ton BAC, tu peux t'inscrire directement en Licence 1 dans la plupart des établissements listés. Dis-moi ta filière souhaitée (informatique, droit, santé, ingénierie...) et je te donne les meilleures options !";
+  }
+
+  return "Merci pour ta question ! Dans cette version de démonstration, je réponds avec des exemples pré-écrits sur les établissements du Burkina Faso (universités publiques, 2iE, ISIG, Aube Nouvelle, INSSA...). Essaie une question sur une filière (informatique, droit, santé), une ville, ou les bourses disponibles.";
+}
+
+function aiSend() {
+  const input = document.getElementById('ai-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  document.getElementById('ai-chips').style.display = 'none';
+  aiAddMsg('user', text);
+  aiShowTyping();
+  document.getElementById('ai-send-btn').disabled = true;
+
+  // Simule un temps de réponse réaliste (pas d'appel réseau)
+  setTimeout(() => {
+    aiRemoveTyping();
+    const reply = generateDemoReply(text);
+    aiAddMsg('bot', reply);
+    document.getElementById('ai-send-btn').disabled = false;
+  }, 700 + Math.random() * 600);
+}
+
+function aiChip(el) {
+  document.getElementById('ai-input').value = el.textContent;
+  aiSend();
+}
+
+function aiAddMsg(role, text) {
+  const chat = document.getElementById('ai-chat');
+  const div = document.createElement('div');
+  div.className = 'ai-msg ' + role;
+  div.innerHTML = `<div class="ai-av">${role === 'bot' ? 'IA' : 'Toi'}</div><div class="ai-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function aiShowTyping() {
+  const chat = document.getElementById('ai-chat');
+  const div = document.createElement('div');
+  div.className = 'ai-msg bot'; div.id = 'ai-typing';
+  div.innerHTML = '<div class="ai-av">IA</div><div class="ai-bubble"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></div>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function aiRemoveTyping() {
+  const t = document.getElementById('ai-typing');
+  if (t) t.remove();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById(id).scrollTop = 0;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const map = { 's-home': 0, 's-compare': 1, 's-ai': 2 };
+  const navBtns = document.querySelectorAll('.nav-btn');
+  if (map[id] !== undefined) navBtns[map[id]].classList.add('active');
+}
+
+// Enregistrement du service worker pour le support hors-ligne (PWA)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
