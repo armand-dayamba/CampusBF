@@ -67,7 +67,7 @@ body{background:#f0f4f8;display:flex;justify-content:center;padding:16px;min-hei
 .stars-big{font-size:20px;color:#f59e0b;letter-spacing:2px}
 .cta-btn{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;margin:16px;width:calc(100% - 32px);transition:opacity .2s}
 .cta-btn:hover{opacity:.9}
-.comp-header{background:var(--blue);padding:14px 16px;color:#fff;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.comp-header{background:var(--blue);padding:14px 16px;color:#fff;display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative}
 .comp-header h2{font-size:16px;font-weight:700}
 .comp-selectors{display:flex;gap:8px;padding:12px 16px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0}
 .comp-selectors select{flex:1;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:12px;color:var(--text)}
@@ -81,7 +81,7 @@ body{background:#f0f4f8;display:flex;justify-content:center;padding:16px;min-hei
 .check{color:var(--green)}
 .cross{color:#ef4444}
 .tag{font-size:10px;background:var(--blue-light);color:var(--blue);padding:2px 7px;border-radius:10px;font-weight:500}
-.ai-header{background:var(--blue);padding:16px 20px 12px;color:#fff;flex-shrink:0}
+.ai-header{background:var(--blue);padding:16px 20px 12px;color:#fff;flex-shrink:0;position:relative}
 .ai-header h2{font-size:18px;font-weight:700}
 .ai-header p{font-size:12px;opacity:.8;margin-top:2px}
 .ai-chat{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:#f0f4f8}
@@ -106,18 +106,33 @@ body{background:#f0f4f8;display:flex;justify-content:center;padding:16px;min-hei
 @keyframes ai-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
 .demo-note{position:fixed;bottom:8px;left:0;right:0;text-align:center;font-size:10px;color:#94a3b8}
 .no-results{padding:24px 16px;text-align:center;color:var(--muted);font-size:13px}
+.bf-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.2px}
+.bf-badge .bf-flag{display:inline-flex;width:20px;height:14px;border-radius:2px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,0.08);position:relative;flex-shrink:0}
+.bf-badge .bf-flag .bf-star{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;z-index:2}
+.bf-badge .bf-flag .bf-red{position:absolute;top:0;left:0;right:0;height:50%;background:#EF3340}
+.bf-badge .bf-flag .bf-green{position:absolute;bottom:0;left:0;right:0;height:50%;background:#009E49}
+.bf-strip{height:3px;background:linear-gradient(90deg,#EF3340 50%,#009E49 50%);flex-shrink:0}
+.topbar .flag-inline{display:inline-flex;width:18px;height:13px;border-radius:2px;overflow:hidden;position:relative;margin-left:6px;vertical-align:middle;box-shadow:0 0 0 1px rgba(255,255,255,0.3)}
+.topbar .flag-inline .bf-red{position:absolute;top:0;left:0;right:0;height:50%;background:#EF3340}
+.topbar .flag-inline .bf-green{position:absolute;bottom:0;left:0;right:0;height:50%;background:#009E49}
+.topbar .flag-inline .bf-star{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;z-index:2}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 </head>
 <body>
 
-<div style="display:flex;justify-content:center;padding:8px 0">
+<div style="display:flex;flex-direction:column;align-items:center;padding:8px 0">
+<div class="bf-badge">
+  <span class="bf-flag"><span class="bf-red"></span><span class="bf-green"></span><svg class="bf-star" viewBox="0 0 51 48" xmlns="http://www.w3.org/2000/svg"><polygon points="25.5,0 33,17 51,18.5 37,30 41.5,48 25.5,38 9.5,48 14,30 0,18.5 18,17" fill="#FCD116"/></svg></span>
+  Fait au Burkina Faso
+</div>
 <div class="phone">
 
 <!-- SCREEN 1: Accueil -->
 <div class="screen active" id="s-home">
   <div class="topbar">
-    <h1>🎓 CampusBF</h1>
+    <div class="bf-strip"></div>
+    <h1>🎓 CampusBF <span class="flag-inline"><span class="bf-red"></span><span class="bf-green"></span><svg class="bf-star" viewBox="0 0 51 48" xmlns="http://www.w3.org/2000/svg"><polygon points="25.5,0 33,17 51,18.5 37,30 41.5,48 25.5,38 9.5,48 14,30 0,18.5 18,17" fill="#FCD116"/></svg></span></h1>
     <p>Trouve ton établissement idéal</p>
     <div class="search-box">
       <i class="ti ti-search"></i>
@@ -156,6 +171,7 @@ body{background:#f0f4f8;display:flex;justify-content:center;padding:16px;min-hei
 <!-- SCREEN 3: Comparateur -->
 <div class="screen" id="s-compare">
   <div class="comp-header">
+    <div class="bf-strip" style="position:absolute;top:0;left:0;right:0"></div>
     <i class="ti ti-arrows-diff" style="font-size:20px"></i>
     <h2>Comparateur</h2>
     <button onclick="showScreen('s-home')" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer">Accueil</button>
@@ -177,6 +193,7 @@ body{background:#f0f4f8;display:flex;justify-content:center;padding:16px;min-hei
 <!-- SCREEN 4: Assistant IA (version démo, réponses simulées) -->
 <div class="screen" id="s-ai" style="flex-direction:column">
   <div class="ai-header">
+    <div class="bf-strip" style="position:absolute;top:0;left:0;right:0"></div>
     <h2><i class="ti ti-robot" style="vertical-align:-2px;margin-right:6px"></i>Assistant CampusBF</h2>
     <p>Pose ta question sur les établissements au Burkina</p>
   </div>
@@ -542,12 +559,32 @@ function aiSend() {
   aiShowTyping();
   document.getElementById('ai-send-btn').disabled = true;
 
-  setTimeout(() => {
-    aiRemoveTyping();
-    const reply = generateDemoReply(text);
-    aiAddMsg('bot', reply);
-    document.getElementById('ai-send-btn').disabled = false;
-  }, 700 + Math.random() * 600);
+  askAssistant(text)
+    .then(reply => {
+      aiRemoveTyping();
+      aiAddMsg('bot', reply);
+    })
+    .catch(() => {
+      // Repli sur les réponses simulées si l'API n'est pas joignable
+      // (hors ligne, fonction Netlify non déployée, quota dépassé...)
+      aiRemoveTyping();
+      aiAddMsg('bot', generateDemoReply(text));
+    })
+    .finally(() => {
+      document.getElementById('ai-send-btn').disabled = false;
+    });
+}
+
+async function askAssistant(question) {
+  const res = await fetch('/.netlify/functions/ai-assistant', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question })
+  });
+  if (!res.ok) throw new Error('Réponse serveur non OK');
+  const data = await res.json();
+  if (!data.reply) throw new Error('Pas de réponse');
+  return data.reply;
 }
 
 function aiChip(el) {
